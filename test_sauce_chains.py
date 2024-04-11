@@ -137,9 +137,9 @@ class Test_Sauce:
         sleep(2) 
         loginBtn.click()
         sleep(2)
-        addToCart=self.driver.find_element(By.ID,"add-to-cart-sauce-labs-onesie")
-        addToCart.click()
-        remove=self.find_element(By.ID,"remove-sauce-labs-onesie")
+        self.driver.execute_script("window.scrollTo(0,1000)")
+        sleep(2)
+        remove=self.driver.find_element(By.ID,"remove-sauce-labs-onesie")
         remove.click()
         check1=self.driver.find_element(By.ID,"add-to-cart-sauce-labs-onesie")
         testResult7=check1.text=="Add to cart"
