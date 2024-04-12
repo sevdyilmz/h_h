@@ -8,6 +8,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 import pytest
 from pathlib import Path
 from datetime import date
+import openpyxl
+from constants import globalConstants
 #prefix= ön ek test_
 #fostfix 
 
@@ -16,7 +18,7 @@ class Test_DemoClass:
     def setup_method(self):
         self.driver=webdriver.Chrome()
         self.driver.maximize_window()
-        self.driver.get("https://www.saucedemo.com/")
+        self.driver.get(globalConstants.URL)
         #günün tarihin al bu tarihli dosya var mı kondtol et yoksa oluştur.
         # today=date.today()
         # print(today)
@@ -50,7 +52,22 @@ class Test_DemoClass:
     #     errorMessage=self.driver.find_element(By.XPATH,"//*[@id='login_button_container']/div/form/div[3]/h3")
     #     assert errorMessage.text=="Epic sadface: Username and password do not match any user in this service"
     
-    @pytest.mark.parametrize("username, password", [("1","1"),("abs","123"),("mnb","321")])
+    def getData():
+        #veriyi al
+        excelFile=openpyxl.load_workbook("data/invalid_login.xlsx")
+        selectedSheet=excelFile["Sayfa1"]
+        totalRows=selectedSheet.max_row
+        data=[]
+        for i in range(2, totalRows+1):
+
+            username=selectedSheet.cell(i,1).value
+            password=selectedSheet.cell(i,2).value
+            tupleData=(username,password)
+            data.append(tupleData)
+         
+        return data
+
+    @pytest.mark.parametrize("username, password", getData())
     def test_invalid_login(self, username, password):
         self.waitForElementVisible((By.ID,"user-name"))
         usernameInput=self.driver.find_element(By.ID,"user-name")
@@ -64,5 +81,6 @@ class Test_DemoClass:
         sleep(2)
         errorMessage=self.driver.find_element(By.XPATH,"//*[@id='login_button_container']/div/form/div[3]/h3")
         self.driver.save_screenshot(f"{self.folderPath}/test_invalid_login-{username}-{password}.png")
+        #tırnaklar arası uyarı mesajına normalde magic string deniyor. ama bu genelde tercih edilmiyor çünkü birkaç yerde aynı mesaj kullanılıyor olabilir ve tek bir işaret bile unutulsa hata alınabilir ve farkedilmesi zor olur. 
         assert errorMessage.text=="Epic sadface: Username and password do not match any user in this service"
     
